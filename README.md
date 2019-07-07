@@ -1,4 +1,4 @@
-# PhD-Thesis
+# NUS  PhD Thesis LaTeX Template
 LaTeX template for Ph.D theis of NUS, mainly for Faculty of Science
 ![](img/chapter3style.png)
 ![](img/chapterheadtwostyle.png)
