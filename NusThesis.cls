@@ -11,17 +11,47 @@
 % class option                                                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% class option:
-%% loabychapter: separate the list of algorithms by chapter
-%% lotbychapter: separate the list of tables     by chapter
-%% lofbychapter: separate the list of figures    by chapter
-%% lolbychapter: separate the list of codes      by chapter // use lstlisting environment
+%% loabychapter      : separate the list of algorithms by chapter
+%% lotbychapter      : separate the list of tables     by chapter
+%% lofbychapter      : separate the list of figures    by chapter
+%% lolbychapter      : separate the list of codes      by chapter // use lstlisting environment
+%% gray              : change colors to gray style
+%% chapterstyletwo   : another type of chapter style
+%% chapterstylethree : third type of chapter style
+%% minitoc           : create a minitoc at each chapter
 \DeclareOption{loabychapter}{\def\thesisloasep{true}}
 \DeclareOption{lofbychapter}{\def\thesislofsep{true}}
 \DeclareOption{lotbychapter}{\def\thesislotsep{true}}
 \DeclareOption{lolbychapter}{\def\thesislolsep{true}}
+\DeclareOption{gray}{\def\globalgray{true}}
+\DeclareOption{chapterstyletwo}{\def\chapterstyletwo{true}}
+\DeclareOption{chapterstylethree}{\def\chapterstylethree{true}}
+\DeclareOption{minitoc}{\def\useminitoc{true}}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}} % inherit book class option
 \ProcessOptions\relax
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% define some color                                                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\RequirePackage{xcolor}
+\@ifundefined{globalgray}{
+  \definecolor{pagenumber}{RGB}{255,255,255}
+  \definecolor{chaptermark}{RGB}{0,102,255}
+  \definecolor{headrule1}{RGB}{0,153,255}
+  \definecolor{headrule2}{RGB}{0,204,255}
+  \definecolor{chapterhead}{rgb}{0, 0, 0}
+}
+{
+  \definecolor{pagenumber}{gray}{1}
+  \definecolor{chaptermark}{gray}{0}
+  \definecolor{headrule1}{gray}{0.2}
+  \definecolor{headrule2}{gray}{0.4}
+  \definecolor{chapterhead}{gray}{0.4}
+}
 
+% commands used after %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand\dunderline[3][-1pt]{{%
+  \setbox0=\hbox{#3}
+  \ooalign{\copy0\cr\rule[\dimexpr#1-#2\relax]{\wd0}{#2}}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % configure                                                                   %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -61,42 +91,36 @@
 \def\examinertwo#1{\def\@examinertwo{#1}}\let\@examinertwo\@empty
 \def\examinerthree#1{\def\@examinerthree{#1}}\let\@examinerthree\@empty
 \def\supervisor#1{\def\@supervisor{#1}}\let\@supervisor\@empty
+
+
+\newcommand{\changefont}{\fontsize{9}{12}\selectfont}
+\newcommand{\chapterheadfont}{\fontsize{6}{11}\selectfont}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% list of publication                                                          %
+% list of publication                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \RequirePackage{bibentry}
 \let\saved@bibitem\@bibitem
+\nobibliography*
 \newcommand{\listofpublications}[1]{%
-  \nobibliography*
   \chapter*{List of Publicatioins}
-  \addcontentsline{toc}{chapter}{List of Publications}
+  \addstarredchapter{List of Publications}
+%  \addcontentsline{toc}{chapter}{}
   \begin{enumerate}%
       \@for \el:=#1\do{\item \bibentry{\el}}%
   \end{enumerate}%
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% hypper ref                                                                  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\RequirePackage{hyperref}
-\let\@bibitem\saved@bibitem
-\hypersetup{unicode=true,             % non-Latin characters in Acrobat’s bookmarks
-  pdftoolbar=true,                    % show Acrobat’s toolbar?
-  pdfmenubar=true,                    % show Acrobat’s menu?
-  pdffitwindow=false,                 % window fit to page when opened
-  pdfstartview={FitH},                % fits the width of the page to the window
-  pdftitle={My title},                % title
-  pdfauthor={Author},                 % author
-  pdfsubject={Subject},               % subject of the document
-  pdfcreator={Creator},               % creator of the document
-  pdfkeywords={keyword1, key2, key3}, % list of keywords
-  pdfnewwindow=true,                  % links in new PDF window
-  colorlinks=true,                    % false: boxed links; true: colored links
-  linkcolor=blue,                     % color of internal links (change box color with linkbordercolor)
-  citecolor=blue,                     % color of links to bibliography
-  filecolor=blue,                     % color of file links
-  urlcolor=blue,                      % color of external links
-  pdfencoding=auto, psdextra 
+% mini toc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage{titletoc}
+\@ifundefined{useminitoc}{
+   \let\addminitoc\@empty
+}{
+  \def\addminitoc{
+    \rule{\textwidth}{1pt}\\[-2.5em]
+    \startcontents[chapters]
+    \printcontents[chapters]{}{1}{\contentsmargin{1em}}
+    \vskip-12pt\noindent\rule{\textwidth}{1pt}
+  }
 }
 
 
@@ -122,63 +146,175 @@
 \RequirePackage{tikzpagenodes}
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{shapes}
-\definecolor{blue1}{RGB}{0,153,255}
-\definecolor{blue2}{RGB}{0,204,255}
-\definecolor{veryblue}{RGB}{0,102,255}
-\newcommand{\changefont}{\fontsize{9}{12}\selectfont}
 %\renewcommand{\sectionmark}[1]{\markright{\thesection~-: ~#1}}
 \fancypagestyle{basicstyle}
 {%
   \fancyhf{}
   % chapter mark
-  \fancyhead[OR]{\color{veryblue} \leftmark}
+  \fancyhead[OR]{\color{chaptermark} \leftmark}
   % section mark
-  \fancyhead[EL]{\color{veryblue} \changefont\slshape\rightmark}
+  \fancyhead[EL]{\color{chaptermark} \changefont\slshape\rightmark}
     \renewcommand{\headrulewidth}{0pt}
   \fancyhead[EC]{
   \begin{tikzpicture}[remember picture,overlay]
     \coordinate (dia) at ([xshift=-0.7cm,yshift=-0.5mm]current page header area.south west);    
-    \draw[blue1,line width=0.3mm] ([yshift=0.5mm]dia.3) 
+    \draw[headrule1,line width=0.3mm] ([yshift=0.5mm]dia.3) 
     -- ([yshift=0.5mm]current page header area.south east|-dia.3);
-    \draw[blue2,line width =0.2mm] (dia.355) 
+    \draw[headrule2,line width =0.2mm] (dia.355) 
     -- ([xshift=-7pt]current page header area.south east|-dia.355);
-    \node[diamond,fill=blue2,draw=blue2] at  (dia)   {  \color{white}  {\tt\large\thepage}};
+    \node[diamond,fill=headrule2] at  (dia)   {  \color{white}  {\tt\large\thepage}};
   \end{tikzpicture}
   }
   \fancyhead[OC]{
   \begin{tikzpicture}[remember picture,overlay]  
     \coordinate (dia) at ([xshift=0.7cm,yshift=-0.5mm]current page header area.south east);
-    \draw[blue1,line width=0.3mm] ([yshift=0.5mm,xshift=7pt]dia.177) 
+    \draw[headrule1,line width=0.3mm] ([yshift=0.5mm,xshift=7pt]dia.177) 
     -- ([yshift=0.5mm]current page header area.south west|-dia.177);
-    \draw[blue2,line width =0.2mm] (dia.183) 
+    \draw[headrule2,line width =0.2mm] (dia.183) 
     -- ([xshift=7pt]current page header area.south west|-dia.183);
-    \node[diamond,fill=blue2,draw=blue2] at (dia)    {  \color{white} \tt\large \thepage};
+    \node[diamond,fill=headrule2] at (dia)    {  \color{white} \tt\large \thepage};
   \end{tikzpicture}
   }
 }
+% gray style %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\fancypagestyle{gray}
+{%
+  \fancyhf{}
+  % chapter mark
+  \fancyhead[OR]{\leftmark}
+  % section mark
+  \fancyhead[EL]{\changefont\slshape\rightmark}
+    \renewcommand{\headrulewidth}{0pt}
+  \fancyhead[EC]{
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (dia) at ([xshift=-0.7cm,yshift=-0.5mm]current page header area.south west);    
+    \draw[darkgray,line width=0.3mm] ([yshift=0.5mm]dia.3) 
+    -- ([yshift=0.5mm]current page header area.south east|-dia.3);
+    \draw[gray,line width =0.2mm] (dia.355) 
+    -- ([xshift=-7pt]current page header area.south east|-dia.355);
+    \node[diamond,fill=gray,draw=gray] at  (dia)   {  \color{white}  {\tt\large\thepage}};
+  \end{tikzpicture}
+  }
+  \fancyhead[OC]{
+  \begin{tikzpicture}[remember picture,overlay]  
+    \coordinate (dia) at ([xshift=0.7cm,yshift=-0.5mm]current page header area.south east);
+    \draw[darkgray,line width=0.3mm] ([yshift=0.5mm,xshift=7pt]dia.177) 
+    -- ([yshift=0.5mm]current page header area.south west|-dia.177);
+    \draw[gray,line width =0.2mm] (dia.183) 
+    -- ([xshift=7pt]current page header area.south west|-dia.183);
+    \node[diamond,fill=gray,draw=gray] at (dia)    {  \color{white} \tt\large \thepage};
+  \end{tikzpicture}
+  }
+}
+% circle style %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\X}{\phantom{\large\tt\thepage}}
+\newlength{\pagey}
+\newlength{\marky}
 
+\fancypagestyle{circle}
+{%
+  \setlength{\pagey}{0.37cm}
+  \setlength{\marky}{0.2cm}
+  \fancyhf{}
+  % chapter mark
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyhead[EC]{
+    \begin{tikzpicture}[remember picture,overlay]  
+      \node[shape=circle, fill=chaptermark!60] at
+      ([xshift=-0.7cm,yshift=\pagey]current page header area.south west) 
+      {\color{pagenumber}  {\large\tt\thepage}} ;
+      \node[shape=circle, fill=chaptermark!40] at 
+      ([xshift= 0.1cm,yshift=\pagey]current page header area.south west)  {\X} ;
+      \node[shape=circle, fill=chaptermark!20] at 
+      ([xshift= 0.9cm,yshift=\pagey]current page header area.south west) {\X};
+      \node[shape=circle, fill=chaptermark!10] at 
+      ([xshift= 1.7cm,yshift=\pagey]current page header area.south west)  {\X}; 
+      \node[left ,text=chaptermark] at 
+      ([xshift=1cm,yshift=\marky] current page header area.south east)  
+      {\dunderline{1.5pt}{\hspace*{1em}\changefont\slshape\rightmark}}; 
+    \end{tikzpicture}
+  }
+  \fancyhead[OC]{
+    \begin{tikzpicture}[remember picture,overlay]      
+      \node[shape=circle, fill=chaptermark!10] at 
+      ([xshift=-1.7cm,yshift=\pagey]current page header area.south east)  {\X};
+      \node[shape=circle, fill=chaptermark!20] at 
+      ([xshift=-0.9cm,yshift=\pagey]current page header area.south east)  {\X};
+      \node[shape=circle, fill=chaptermark!40] at 
+      ([xshift=-0.1cm,yshift=\pagey]current page header area.south east)  {\X} ;
+      \node[shape=circle, fill=chaptermark!60] at
+      ([xshift= 0.7cm,yshift=\pagey]current page header area.south east) 
+      { \color{pagenumber}  {\large\tt\thepage}};
+      \node[right,text=chaptermark] at 
+       ([xshift=-1cm,yshift=\marky] current page header area.south west)  
+       {\dunderline{1.5pt}{\leftmark\hspace*{1em}}}; 
+    \end{tikzpicture}
+  }
+}
+% circle2 style  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fancypagestyle{circle2}
+{%
+  \setlength{\pagey}{0.6cm}
+  \setlength{\marky}{0.2cm}
+  \fancyhf{}
+  % chapter mark
+  \renewcommand{\headrulewidth}{0pt}
+  
+  \fancyhead[EC]{
+    \begin{tikzpicture}[remember picture,overlay]  
+      \node[shape=circle, fill=chaptermark!50] at
+      ([xshift=-2.5cm,yshift=1.7\pagey]current page header area.south west) 
+      {\color{pagenumber}  {\large\tt\thepage}} ;
+      \node[left ,text=chaptermark] at 
+      ([xshift=1cm,yshift=\marky] current page header area.south east)  {\dunderline{1.5pt}{\hspace*{1em}\changefont\slshape\rightmark}}; 
+    \end{tikzpicture}
+  }
+  \fancyhead[OC]{
+    \begin{tikzpicture}[remember picture,overlay]      
+      \node[shape=circle, fill=chaptermark!50] at
+      ([xshift= 2.5cm,yshift=1.7\pagey]current page header area.south east) 
+      { \color{pagenumber}  {\large\tt\thepage}};
+      \node[right,text=chaptermark] at 
+       ([xshift=-1cm,yshift=\marky] current page header area.south west)  {\dunderline{1.5pt}{\leftmark\hspace*{1em}}}; 
+    \end{tikzpicture}
+  }
+}
+% circle3 style  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fancypagestyle{circle3}
+{%
+  \setlength{\pagey}{0.6cm}
+  \setlength{\marky}{0.2cm}
+  \fancyhf{}
+  % chapter mark
+  \renewcommand{\headrulewidth}{0pt}
+  
+  \fancyhead[EC]{
+    \begin{tikzpicture}[remember picture,overlay]  
+      \node[shape=circle, fill=chaptermark!50] at
+      ([xshift=1.2cm,yshift=0\pagey]current page.west) 
+      {\color{pagenumber}  {\large\tt\thepage}} ;
+      \node[left ,text=chaptermark] at 
+      ([xshift=1cm,yshift=\marky] current page header area.south east) 
+      {\dunderline{1.5pt}{\hspace*{1em}\changefont\slshape\rightmark}}; 
+    \end{tikzpicture}
+  }
+  \fancyhead[OC]{
+    \begin{tikzpicture}[remember picture,overlay]      
+      \node[shape=circle, fill=chaptermark!50] at
+      ([xshift=-1.2cm,yshift=0\pagey]current page.east) 
+      { \color{pagenumber}  {\large\tt\thepage}};
+      \node[right,text=chaptermark] at 
+      ([xshift=-1cm,yshift=\marky] current page header area.south west)
+      {\dunderline{1.5pt}{\leftmark\hspace*{1em}}}; 
+    \end{tikzpicture}
+  }
+}
+
+  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Algorithms                                                                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% % A L G O R I T H M
-% \usepackage{algpseudocode} 
-% \renewcommand{\algorithmicrequire}{\textbf{Input:}}
-% \renewcommand{\algorithmicensure}{\textbf{Output:}}
-% \algrenewcommand{\algorithmiccomment}[1]{\hskip2em//\textcolor{green}{\small\tt #1}}
-% \RequirePackage{newfloat,caption,etoolbox}
-% \AtEndEnvironment{algorithm}{\vskip-6pt\noindent\rule{\linewidth}{1pt}\par\nobreak\vskip-8pt}
-% \DeclareFloatingEnvironment[
-% fileext=loa,
-% listname=List of Algorithms,
-% name=ALGORITHM,
-% placement=htbp,
-% ]{algorithm}
-% \DeclareCaptionFormat{algorithms}{\vskip-4pt\rule{\linewidth}{1pt}\par\centering#1#2#3\vskip-5pt\rule{\linewidth}{0.6pt}\vskip-6pt}
-% \captionsetup[algorithm]{singlelinecheck=off,format=algorithms}
-% \algblock[Input]{Input}{EndInput}
-% \algblockdefx[Input]{Input}{EndInput}[1]{\textbf{Input} #1}{}%
-
-
 \RequirePackage{algorithm}
 \RequirePackage[algo2e, ruled, linesnumbered, algochapter]{algorithm2e}
 \DontPrintSemicolon                     % Dont print semicolons at end of lines.
@@ -205,7 +341,8 @@
 \counterwithin*{algocf}{chapter}
 \renewcommand{\thealgocf}{\arabic{chapter}.\arabic{algocf}}
 
-%%  languages supported
+% codes environments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% using lstlisting 
 \RequirePackage{listings}
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{RGB}{240,240,240}
@@ -242,9 +379,17 @@
 }
 \renewcommand\lstlistingname{\bf Code}
 \renewcommand{\lstlistlistingname}{\bf List of Codes}
-%\usepackage{chngcntr}
-%\AtBeginDocument{\counterwithin{lstlisting}{section}}
-% \renewcommand{\thelstlisting}{\arabic{lstlisting}}
+\let\oldlistofalgorithms\listofalgorithms
+\renewcommand\listofalgorithms{
+ \oldlistofalgorithms
+ \addstarredchapter{List of Algorithms}
+% \addcontentsline{toc}{chapter}{}
+}
+\let\oldlstlistoflistings\lstlistoflistings
+\renewcommand\lstlistoflistings{
+  \oldlstlistoflistings
+  \addstarredchapter{List of Codes}
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % D E C L A R A T I O N  P A G E
 \newcommand{\AddDeclaration}[1][nosignimage]{%
@@ -301,7 +446,8 @@
   \cleartorightpage
 	\thispagestyle{plain}
     \chapter*{\uppercase{acknowledgement}}
-    \addcontentsline{toc}{chapter}{Acknowledgement}
+    \addstarredchapter{Acknowledgem}
+%    \addcontentsline{toc}{chapter}{Acknowledgement}
 }
 {%
     
@@ -314,7 +460,8 @@
   \cleartorightpage
   \thispagestyle{plain}
   \chapter*{summary}%
-  \addcontentsline{toc}{chapter}{Summary}
+  \addstarredchapter{Summary}
+%  \addcontentsline{toc}{chapter}{Summary}
 }
 {
   \par
@@ -332,7 +479,8 @@
 {%
 	\clearpage                                   % Fix the page number in TOC.
 	\phantomsection                              % Fix the link in PDF.
-	\addcontentsline{toc}{chapter}{Bibliography} % Add the bibliography to TOC.
+    \addstarredchapter{Bibliography}
+%	\addcontentsline{toc}{chapter}{Bibliography} % Add the bibliography to TOC.
 	\IncludeBib{#1}                            % Include the bibliography file.
 }
 
@@ -356,32 +504,71 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % chapter                                                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\def\@makechapterhead#1{%
-  \vspace*{-30\p@}%  								
-  {\parindent \z@ \raggedright \normalfont
-    \interlinepenalty\@M
-    \begin{tikzpicture}
-      \coordinate (x) at (0,1); 
-      \coordinate (y) at (\textwidth,1);
-      \coordinate (z) at (\textwidth,-0.5);
-      \coordinate (w) at (0,-0.5);
-      \draw[line width=1pt] (x)--(y)--(z)--(w)--cycle;
-      \node[right=4pt,fill=white] at (x) {\huge{\bf C}{\bf\Large HAPTER}~~{\bf \huge\thechapter}};
-      \node[left =4pt,fill=white] at (z) {\Large\bf\MakeUppercase{#1}};
+\@ifundefined{chapterstyletwo}{
+  \@ifundefined{chapterstylethree}{
+    %% default style
+    \def\@makechapterhead#1{%
+      \vspace*{-30\p@}%  								
+      {\parindent \z@ \raggedright \normalfont
+        \interlinepenalty\@M
+        \begin{tikzpicture}
+          \coordinate (x) at (0,1); 
+          \coordinate (y) at (\textwidth,1);
+          \coordinate (z) at (\textwidth,-0.5);
+          \coordinate (w) at (0,-0.5);
+          \draw[line width=1pt] (x)--(y)--(z)--(w)--cycle;
+          \node[right=4pt,fill=white] at (x) {\huge{\bf C}{\bf\Large HAPTER}~~{\bf \huge\thechapter}};
+          \node[left =4pt,fill=white] at (z) {\Large\bf\MakeUppercase{#1}};
+        \end{tikzpicture}
+        \par\nobreak
+        \vskip 12.5\p@								
+      }
+    }
+  }{
+    %% chapterthree style
+    \def\@makechapterhead#1{%
+      \vspace*{-28\p@}%
+      \begin{tikzpicture}[remember picture,overlay]   
+        \coordinate (y) at ([xshift=2.38cm,yshift=-3.04cm]current page.north west);
+        \coordinate (z) at ([xshift=0.7cm,yshift=-1cm]y);
+        \coordinate (w) at ([xshift=0.7cm,yshift=-2cm]y);   
+        \draw[line width =1pt] (w) --+(\textwidth+0.75cm,0);
+        \draw[line width=1pt, draw = chapterhead,fill=chapterhead]
+        (y)--+(1.4cm,0)--+(1.4cm,-4cm)--+(0,-4cm)--(y)--cycle;
+        \draw[line width=1pt, draw = chapterhead]
+        (z)--+(1.4cm,0)--+(1.4cm,-4cm)--+(0,-4cm)--(z)--cycle;
+        \node[below] at ([xshift =7mm,yshift=-3cm]y) {\Huge\color{white}\bf \thechapter};
+        
+        \node[right] at ([xshift =1.8cm,yshift=-1.7cm]z) {\Huge\it\MakeUppercase{#1}};
+        \node[below right,rotate=270] at ([xshift =5mm]y) {\color{white}\scshape\large \bf CHAPTER };
+      \end{tikzpicture}
+      \par
+      \vskip160pt
+    }
+  }
+}{
+  %% chaptertwo style
+  \def\@makechapterhead#1{%
+    \vspace*{-28\p@}%
+    \begin{tikzpicture}[remember picture,overlay]   
+      \coordinate (y) at ([xshift=2.38cm,yshift=-3.295cm]current page.north west);
+      \coordinate (z) at ([xshift=0.7cm,yshift=-1cm]y);
+      \coordinate (w) at ([xshift=0.7cm,yshift=-2cm]y);
+      \draw[line width =1pt] (w) --+(\textwidth+0.75cm,0);
+      \node[above right] at ([xshift =-1.6mm]y) {\bf\chapterheadfont CHAPTER};
+      \draw[line width=1pt, draw = chapterhead,fill=chapterhead]
+      (y)--+(1.4cm,0)--+(1.4cm,-4cm)--+(0,-4cm)--(y)--cycle;
+      \draw[line width=1pt, draw = chapterhead]
+      (z)--+(1.4cm,0)--+(1.4cm,-4cm)--+(0,-4cm)--(z)--cycle;
+      \node[below] at ([xshift =7mm,yshift=-6mm]y) {\Huge\color{white}\bf \thechapter};
+      
+      \node[right] at ([xshift =1.8cm,yshift=-1.7cm]z) {\Huge\it\MakeUppercase{#1}};
     \end{tikzpicture}
-    \par\nobreak
-    \vskip -0.5\p@								
+    \par
+    \vskip160pt
   }
 }
 %% for stared chapter
-% \def\@makeschapterhead#1{%
-%   %%%%%\vspace*{50\p@}% %%% removed!
-%   {\parindent \z@ \centering
-%     \normalfont
-%     \interlinepenalty\@M
-%     \LARGE \bfseries  #1\par\nobreak
-%     \vskip 40\p@
-%   }}
 \def\@makeschapterhead#1{%
   \vspace*{-30\p@}%  							
   {\parindent \z@ \raggedright \normalfont
@@ -402,11 +589,11 @@
 \renewcommand*\chapter{%
   \@ifstar{\starchapter}{\@dblarg\nostarchapter}}
 \newcommand*\starchapter[1]{\cleartorightpage\stdchapter*{#1}}
-\def\nostarchapter[#1]#2{\cleartorightpage\stdchapter[{#1}]{#2}}
+\def\nostarchapter[#1]#2{\cleartorightpage\stdchapter[{#1}]{#2}\addminitoc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % section                                                                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\RequirePackage{titlesec}
+%\RequirePackage{titlesec}
  %\RequirePackage{mfirstuc}
 % \xmakefirstuc{\mytext}
 \renewcommand\section{\@startsection {section}{1}{\z@}%
@@ -424,14 +611,16 @@
         \@mkboth{%
            \MakeUppercase\listfigurename}{\MakeUppercase\listfigurename}}
     \@starttoc{lof}%
-    \addcontentsline{toc}{chapter}{List of Figures}
+    \addstarredchapter{List of Figures}
+%    \addcontentsline{toc}{chapter}{List of Figures}
 }
 \renewcommand\listoftables{%
     \chapter*{\huge\listtablename
         \@mkboth{%
            \MakeUppercase\listtablename}{\MakeUppercase\listtablename}}
     \@starttoc{lot}%
-    \addcontentsline{toc}{chapter}{List of Tables}
+    \addstarredchapter{List of Tables}
+%    \addcontentsline{toc}{chapter}{List of Tables}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -533,6 +722,35 @@
   }%
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% hypper ref                                                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\RequirePackage{hyperref}
+\let\@bibitem\saved@bibitem
+\hypersetup{unicode=true,             % non-Latin characters in Acrobat’s bookmarks
+  pdftoolbar=true,                    % show Acrobat’s toolbar?
+  pdfmenubar=true,                    % show Acrobat’s menu?
+  pdffitwindow=false,                 % window fit to page when opened
+  pdfstartview={FitH},                % fits the width of the page to the window
+  pdftitle={My title},                % title
+  pdfauthor={Author},                 % author
+  pdfsubject={Subject},               % subject of the document
+  pdfcreator={Creator},               % creator of the document
+  pdfkeywords={keyword1, key2, key3}, % list of keywords
+  pdfnewwindow=true,                  % links in new PDF window
+  colorlinks=true,                    % false: boxed links; true: colored links
+  linkcolor=blue,                     % color of internal links (change box color with linkbordercolor)
+  citecolor=blue,                     % color of links to bibliography
+  filecolor=blue,                     % color of file links
+  urlcolor=blue,                      % color of external links
+  pdfencoding=auto, psdextra 
+}
+
+
+\@ifundefined{addstarredchapter}{
+  \newcommand\addstarredchapter[1]{ \addcontentsline{toc}{chapter}{#1}}
+}{}
 %%
 %%
 \makeatother

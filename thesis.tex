@@ -1,15 +1,23 @@
-\documentclass[a4paper,11pt,twoside,loabychapter,lotbychapter,lofbychapter]{NusThesis}    
+\documentclass[a4paper,11pt,minitoc,gray,chapterstyletwo,twoside,loabychapter,lotbychapter,lofbychapter]{NusThesis}    
 %% class option:
-%% loabychapter: separate the list of algorithms by chapter
-%% lotbychapter: separate the list of tables     by chapter
-%% lofbychapter: separate the list of figures    by chapter
-%% lolbychapter: separate the list of codes      by chapter // use lstlisting environment
+%% loabychapter      : separate the list of algorithms by chapter
+%% lotbychapter      : separate the list of tables     by chapter
+%% lofbychapter      : separate the list of figures    by chapter
+%% lolbychapter      : separate the list of codes      by chapter // use lstlisting environment
+%% gray              : change colors to gray style
+%% chapterstyletwo   : another type of chapter style
+%% chapterstylethree : third type of chapter style
+%% minitoc           : create a minitoc at each chapter
+
 %% all the options for the book class can be added here
-%% the 
+
+%% self defined commands and configurations and extra loaded packaged, which are not necessary 
+%% to use this class
 \input{package}           % for used packages
 \input{self.commands}     % for delfdefined commands
 \input{config}            % for specific configurations
 %% users can replace the contents of the above files to these they need
+%\usepackage{showframe}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % input informations                                                          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -25,6 +33,8 @@
 \examinertwo{Professor B}          % may add the name of his university
 \examinerthree{Professor C, University of Somecity}
 
+
+
 % documents starts==============================================>
 \begin{document}
 \frontmatter              % change page number to roman number
@@ -37,19 +47,20 @@
 \input{summary}           % input the contents of summary
 \listoffigures            % create the list of figures and add to toc
 \listoftables             % create the list of tables and add to toc
-\listofsymbols            % create the list of symbols and add to toc
-\listofalgorithms\addcontentsline{toc}{chapter}{List of Algorithms}
-\lstlistoflistings\addcontentsline{toc}{chapter}{List of Codes}
-\listofpublications{Qian_sppt,Qian_CS,Qian_CS2}
+\listofsymbols            % create the list of symbols and add to toc. see symbols.tex for examples
+\listofalgorithms         % create the list of algorithms and add to toc
+\lstlistoflistings        % create the list of codes and add to toc
+\listofpublications{Qian_sppt,Qian_CS,Qian_CS2} 
 
 % create the list of your publication, 
 % the contents if defined in contents file
 %% main contents start========================================>
 \mainmatter              % change page number to arabic number
 \chapter*{Introduction}
-\addcontentsline{toc}{chapter}{Introduction} % add the introduction to toc
+\addstarredchapter{Introduction} % add the introduction to toc
 \input{introduction}     % introcution part
-\pagestyle{basicstyle}   % use to change the head and foot style
+\pagestyle{circle}   % use to change the head and foot style
+%% possible head style : basicstyle, gray, circle, circle2, circle3
 \input{chapter1}         % for clarity, we split the source into several files
 \input{chapter2}
 \input{chapter2}         % for testing
@@ -64,7 +75,7 @@ $\gls{F}$,$\gls{xx}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % bibliography                                                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\bibliographystyle{tsien} % bibliography style, for example: plain
+\bibliographystyle{tsien} % bibliography style, for example: plain, style "tsien" is user cumstomized
 \bibliography{biblio}       % bib file name 
 
 \end{document}
